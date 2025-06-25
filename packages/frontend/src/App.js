@@ -99,20 +99,36 @@ function App() {
           {loading && <p>Loading data...</p>}
           {error && <p className="error">{error}</p>}
           {!loading && !error && (
-            <ul>
+            <>
               {data.length > 0 ? (
-                data.map(item => (
-                  <li key={item.id}>
-                    {item.name}
-                    <button onClick={() => handleDelete(item.id)} className="delete-btn">
-                      Delete
-                    </button>
-                  </li>
-                ))
+                <table className="items-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Created At</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.map(item => (
+                      <tr key={item.id}>
+                        <td>{item.id}</td>
+                        <td>{item.name}</td>
+                        <td>{new Date(item.created_at).toLocaleString()}</td>
+                        <td>
+                          <button onClick={() => handleDelete(item.id)} className="delete-btn">
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               ) : (
                 <p>No items found. Add some!</p>
               )}
-            </ul>
+            </>
           )}
         </section>
       </main>
