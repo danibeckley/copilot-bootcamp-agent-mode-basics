@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+packages/*/node_modules/
+
+# Build outputs
+packages/frontend/build/
+packages/backend/dist/
+
+# Coverage reports
+coverage/
+packages/*/coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+.tmp/
+*.tmp
+*.temp
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Package files
+*.tgz
+*.tar.gz
+
+# Lock files (optional - you might want to format these)
+package-lock.json
+yarn.lock
+
+# GitHub workflows and steps (these are often provided by the platform)
+.github/
+
+# Configuration files that might have specific formatting
+*.config.js
+jest.config.js
+
+# Documentation files that have specific formatting
+docs/
+README.md
+LINTING.md
+
+# HTML files (often have specific formatting requirements)
+*.html

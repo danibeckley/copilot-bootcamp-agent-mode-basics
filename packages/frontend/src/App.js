@@ -29,7 +29,7 @@ function App() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (!newItem.trim()) return;
 
@@ -55,7 +55,7 @@ function App() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async id => {
     try {
       const response = await fetch(`/api/items/${id}`, {
         method: 'DELETE',
@@ -79,7 +79,7 @@ function App() {
         <h1>Hello World</h1>
         <p>Connected to in-memory database</p>
       </header>
-      
+
       <main>
         <section className="add-item-section">
           <h2>Add New Item</h2>
@@ -87,7 +87,7 @@ function App() {
             <input
               type="text"
               value={newItem}
-              onChange={(e) => setNewItem(e.target.value)}
+              onChange={e => setNewItem(e.target.value)}
               placeholder="Enter item name"
             />
             <button type="submit">Add Item</button>
@@ -101,13 +101,10 @@ function App() {
           {!loading && !error && (
             <ul>
               {data.length > 0 ? (
-                data.map((item) => (
+                data.map(item => (
                   <li key={item.id}>
                     {item.name}
-                    <button 
-                      onClick={() => handleDelete(item.id)}
-                      className="delete-btn"
-                    >
+                    <button onClick={() => handleDelete(item.id)} className="delete-btn">
                       Delete
                     </button>
                   </li>
