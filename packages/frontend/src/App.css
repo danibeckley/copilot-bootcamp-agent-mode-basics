@@ -67,10 +67,25 @@ li {
   padding: 10px;
   border-bottom: 1px solid #ddd;
   text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 li:last-child {
   border-bottom: none;
+}
+
+.delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  margin-left: 10px;
+}
+
+.delete-btn:hover {
+  background-color: #d9363e;
 }
 
 .error {
