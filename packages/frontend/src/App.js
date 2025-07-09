@@ -138,7 +138,7 @@ function App() {
           <Box mb={2}>
             <Typography variant="h6" gutterBottom>Items from Database</Typography>
             {loading && (
-              <Box display="flex" justifyContent="center" my={4}>
+              <Box display="flex" justifyContent="center" my={4} data-testid="loading-indicator">
                 <CircularProgress />
               </Box>
             )}
