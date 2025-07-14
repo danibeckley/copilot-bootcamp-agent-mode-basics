@@ -142,7 +142,7 @@ jobs:
         with:
           template-file: exercise-toolkit/markdown-templates/step-feedback/step-results-table.md
           template-vars: |
-            step_number: 4-6
+            step_number: 4-7
             passed: ${{ !contains(steps.*.outcome, 'failure') }}
             results_table:
               - description: "Tests for handleDelete function should exist in packages/frontend/src/__tests__/App.test.js"
