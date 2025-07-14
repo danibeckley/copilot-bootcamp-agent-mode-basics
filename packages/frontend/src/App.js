@@ -33,6 +33,7 @@ function App() {
 
   const fetchData = async () => {
     try {
+      setError(null); // Clear any previous errors
       setLoading(true);
       const response = await fetch('/api/items');
       if (!response.ok) {
@@ -40,7 +41,6 @@ function App() {
       }
       const result = await response.json();
       setData(result);
-      setError(null);
     } catch (err) {
       setError('Failed to fetch data: ' + err.message);
       console.error('Error fetching data:', err);
@@ -54,6 +54,7 @@ function App() {
     if (!newItem.trim()) return;
 
     try {
+      setError(null);
       const response = await fetch('/api/items', {
         method: 'POST',
         headers: {
@@ -67,7 +68,7 @@ function App() {
       }
 
       const result = await response.json();
-      setData([...data, result]);
+      setData(prevData => [...prevData, result]);
       setNewItem('');
     } catch (err) {
       setError('Error adding item: ' + err.message);
@@ -77,6 +78,7 @@ function App() {
 
   const handleDelete = async id => {
     try {
+      setError(null);
       const response = await fetch(`/api/items/${id}`, {
         method: 'DELETE',
       });
@@ -91,7 +93,7 @@ function App() {
       }
 
       // Remove the deleted item from state
-      setData(data.filter(item => item.id !== id));
+      setData(prevData => prevData.filter(item => item.id !== id));
     } catch (err) {
       setError('Error deleting item: ' + err.message);
       console.error('Error deleting item:', err);
@@ -144,7 +146,7 @@ function App() {
             <Typography variant="h6" gutterBottom>Items from Database</Typography>
             {loading && (
               <Box display="flex" justifyContent="center" my={4} data-testid="loading-indicator">
-                <CircularProgress />
+                <CircularProgress aria-label="Loading data" />
               </Box>
             )}
             {error && <Alert severity="error" sx={{ my: 2 }}>{error}</Alert>}
