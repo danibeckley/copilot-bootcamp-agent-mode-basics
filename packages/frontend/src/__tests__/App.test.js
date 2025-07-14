@@ -81,7 +81,7 @@ describe('App Component', () => {
     });
   });
 
-  test('loads and displays a large number of items', async () => {
+  test('loads and displays a large number of items | load items | display items', async () => {
     // Override the default handler to return 50 items
     server.use(
       rest.get('/api/items', (req, res, ctx) => {
