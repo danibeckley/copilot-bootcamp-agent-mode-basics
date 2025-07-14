@@ -10,8 +10,8 @@ global.fetch = jest.fn();
 
 // Mock data for testing
 const mockItems = [
-  { id: 1, name: 'Item 1', created_at: '2025-07-09T12:00:00Z' },
-  { id: 2, name: 'Item 2', created_at: '2025-07-09T12:30:00Z' },
+  { id: 1, name: 'Item 1', created_at: '2025-07-01T12:00:00Z' }, // Older than 5 days
+  { id: 2, name: 'Item 2', created_at: '2025-07-02T12:30:00Z' }, // Older than 5 days
 ];
 
 // Set up and tear down before and after tests
@@ -323,6 +323,49 @@ describe('App Component - Add and Delete Edge Cases', () => {
       const alerts = screen.getAllByRole('alert');
       expect(alerts.length).toBeGreaterThan(0);
       expect(alerts[0]).toHaveTextContent(/error deleting item/i);
+    });
+    
+    // Clean up mock
+    console.error.mockRestore();
+  });
+
+  test('shows appropriate error when trying to delete an item less than 5 days old', async () => {
+    // Load the app first with initial data
+    render(<App />);
+    
+    // Wait for items to load
+    await waitFor(() => {
+      expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument();
+    });
+    
+    // Set up the mock for the delete operation - must be done after initial fetch
+    global.fetch.mockReset();
+    
+    // Mock console.error to avoid test output noise
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    
+    // Mock the 403 response for trying to delete an item less than 5 days old
+    global.fetch.mockImplementationOnce(() => 
+      Promise.resolve({
+        ok: false,
+        status: 403,
+        json: () => Promise.resolve({ 
+          error: 'Cannot delete items newer than 5 days',
+          itemAge: 3 
+        })
+      })
+    );
+    
+    // Find and click delete button for an item
+    const deleteButtons = await screen.findAllByRole('button', { name: /delete/i });
+    fireEvent.click(deleteButtons[0]);
+    
+    // Check for the specific error message about age requirement
+    await waitFor(() => {
+      const alerts = screen.getAllByRole('alert');
+      expect(alerts.length).toBeGreaterThan(0);
+      expect(alerts[0]).toHaveTextContent(/must be at least 5 days old/i);
+      expect(alerts[0]).toHaveTextContent(/current age: 3 days/i);
     });
     
     // Clean up mock

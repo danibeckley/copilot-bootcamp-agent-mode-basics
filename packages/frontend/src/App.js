@@ -82,6 +82,11 @@ function App() {
       });
 
       if (!response.ok) {
+        // Check if it's the "too recent to delete" error
+        const errorData = await response.json();
+        if (response.status === 403 && errorData.error === 'Cannot delete items newer than 5 days') {
+          throw new Error(`Cannot delete: item must be at least 5 days old (current age: ${errorData.itemAge} days)`);
+        }
         throw new Error('Failed to delete item');
       }
 

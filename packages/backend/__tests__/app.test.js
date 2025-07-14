@@ -14,15 +14,23 @@ describe('DELETE /api/items/:id', () => {
     // Clear the items table
     db.exec('DELETE FROM items');
     
-    // Insert test items
-    const insertStmt = db.prepare('INSERT INTO items (name) VALUES (?)');
-    insertStmt.run('Test Item 1');
-    insertStmt.run('Test Item 2');
+    // Insert test items with specific created_at dates
+    const insertWithDateStmt = db.prepare('INSERT INTO items (name, created_at) VALUES (?, ?)');
+    
+    // Create an item older than 5 days
+    const oldDate = new Date();
+    oldDate.setDate(oldDate.getDate() - 6);
+    insertWithDateStmt.run('Old Item', oldDate.toISOString());
+    
+    // Create a recent item (less than 5 days old)
+    const recentDate = new Date();
+    recentDate.setDate(recentDate.getDate() - 3);
+    insertWithDateStmt.run('Recent Item', recentDate.toISOString());
   });
 
-  it('should successfully delete an existing item', async () => {
-    // Get an existing item from the database
-    const item = db.prepare('SELECT * FROM items LIMIT 1').get();
+  it('should successfully delete an item older than 5 days', async () => {
+    // Get the old item from the database
+    const item = db.prepare("SELECT * FROM items WHERE name = 'Old Item'").get();
     
     // Send a DELETE request to remove the item
     const response = await request(app)
@@ -36,6 +44,28 @@ describe('DELETE /api/items/:id', () => {
     // Verify the item is actually deleted from the database
     const checkItem = db.prepare('SELECT * FROM items WHERE id = ?').get(item.id);
     expect(checkItem).toBeUndefined();
+  });
+
+  it('should return 403 when trying to delete an item less than 5 days old', async () => {
+    // Get the recent item from the database
+    const item = db.prepare("SELECT * FROM items WHERE name = 'Recent Item'").get();
+    
+    // Send a DELETE request for the recent item
+    const response = await request(app)
+      .delete(`/api/items/${item.id}`)
+      .expect(403);
+    
+    // Assert the response contains the expected error message
+    expect(response.body).toHaveProperty('error', 'Cannot delete items newer than 5 days');
+    
+    // Check that itemAge is a number less than 5
+    expect(response.body).toHaveProperty('itemAge');
+    expect(typeof response.body.itemAge).toBe('number');
+    expect(response.body.itemAge).toBeLessThan(5);
+    
+    // Verify the item is still in the database
+    const checkItem = db.prepare('SELECT * FROM items WHERE id = ?').get(item.id);
+    expect(checkItem).toBeDefined();
   });
 
   it('should return 404 when deleting a non-existent item', async () => {
