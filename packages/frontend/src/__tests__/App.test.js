@@ -684,8 +684,70 @@ describe('App Component - UI Elements', () => {
     expect(screen.getByRole('button', { name: /Add Item/i })).toBeInTheDocument();
   });
 
+<<<<<<< Updated upstream
   test('renders the table headers correctly', async () => {
     render(<App />);
+=======
+  test('shows loading spinner and hides after items load', async () => {
+    await act(async () => {
+      render(<App />);
+    });
+    // Loading spinner/message should be visible initially
+    expect(screen.getByText('Loading data...')).toBeInTheDocument();
+    // Wait for items to load
+    await waitFor(() => {
+      expect(screen.queryByText('Loading data...')).not.toBeInTheDocument();
+    });
+  });
+
+  test('loads and displays a large number of items | load items | display items', async () => {
+    // Override the default handler to return 50 items
+    server.use(
+      rest.get('/api/items', (req, res, ctx) => {
+        const items = Array.from({ length: 50 }, (_, i) => ({
+          id: i + 1,
+          name: `Item ${i + 1}`,
+          created_at: '2023-01-01T00:00:00.000Z',
+        }));
+        return res(ctx.status(200), ctx.json(items));
+      })
+    );
+    await act(async () => {
+      render(<App />);
+    });
+    // Wait for all items to load
+    await waitFor(() => {
+      expect(screen.getByText('Item 1')).toBeInTheDocument();
+      expect(screen.getByText('Item 50')).toBeInTheDocument();
+    });
+  });
+
+  test('loads items with special characters in names', async () => {
+    server.use(
+      rest.get('/api/items', (req, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.json([
+            { id: 1, name: 'Café & Bistro', created_at: '2023-01-01T00:00:00.000Z' },
+            { id: 2, name: 'Toys "R" Us', created_at: '2023-01-02T00:00:00.000Z' },
+            { id: 3, name: 'Emoji 😀', created_at: '2023-01-03T00:00:00.000Z' },
+          ])
+        );
+      })
+    );
+    await act(async () => {
+      render(<App />);
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Café & Bistro')).toBeInTheDocument();
+      expect(screen.getByText('Toys "R" Us')).toBeInTheDocument();
+      expect(screen.getByText('Emoji 😀')).toBeInTheDocument();
+    });
+  });
+
+  test('adds a new item', async () => {
+    const user = userEvent.setup();
+>>>>>>> Stashed changes
     
     // Wait for data to load
     await waitFor(() => {
